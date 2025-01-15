@@ -13,19 +13,19 @@ In complex systems, components often depend on each other. With CoPN, these rela
 
 The activation/deactivation of **Source Context (P1)** also activates/deactivates **Target Context (P2)**, but **Target Context (P2)** retains the freedom to activate or deactivate independently.
 
-<img src="C:/Users/Administrator/Desktop/CoPN/docs/assets/WeakInclusion.png" style="zoom: 33%;" />
+<img src="../../assets/WeakInclusion.png" style="zoom: 33%;" />
 
 ## 2. Strong Inclusion
 
 The activation/deactivation of **Source Context (P1)** or **Target Context (P2)** also activates/deactivates the other, but **Target Context (P2)** retains the freedom to activate or deactivate independently.
 
-<img src="C:/Users/Administrator/Desktop/CoPN/docs/assets/StrongInclusion.png" style="zoom: 33%;" />
+<img src="../../assets/StrongInclusion.png" style="zoom: 33%;" />
 
 ## 3. Exclusion
 
 Two contexts cannot be active simultaneously, where activating one context will automatically deactivate the other.
 
-<img src="C:/Users/Administrator/Desktop/CoPN/docs/assets/Exclusion.png" style="zoom: 33%;" />
+<img src="../../assets/Exclusion.png" style="zoom: 33%;" />
 
 ## 4. Requirement
 
