@@ -3,8 +3,6 @@ model WeakInclusion
     Placement(transformation(origin = {-6, 40}, extent = {{-10, -10}, {10, 10}})));
   PNlib.Components.PD P2(nIn = 2, nOut = 3)  annotation(
     Placement(transformation(origin = {-6, -4}, extent = {{-10, -10}, {10, 10}})));
-  inner PNlib.Components.Settings settings(showCapacity = true, showTokenFlow = true)  annotation(
-    Placement(transformation(origin = {-82, 82}, extent = {{-10, -10}, {10, 10}})));
   PNlib.Components.TE T1a(nOut = 2, event = {1, 4, 6}, nIn = 0)  annotation(
     Placement(transformation(origin = {-70, 40}, extent = {{-10, -10}, {10, 10}})));
   PNlib.Components.TE T2a(nOut = 1, event = {3})  annotation(
