@@ -28,7 +28,7 @@ Let's focus on the **requirement** relationship.
 
 The **highPerformanceMode** is designed to activate when **loadDemand** exceeds 200 (after 14 hours). However, due to its dependency on **hybridSupply**, it can only activate after 15 hours when **hybridSupply** is also active.
 
-<img src="./assets/result_1.png" alt="result_1" style="zoom: 67%;" />
+<img src="./assets/result_1.png" alt="result_1" style="zoom: 50%;" />
 
-<img src="./assets/result_2.png" alt="result_2" style="zoom: 67%;" />
+<img src="./assets/result_2.png" alt="result_2" style="zoom: 50%;" />
 
