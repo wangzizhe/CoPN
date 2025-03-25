@@ -91,10 +91,6 @@ class CoPNCompositor:
             if component in place_ports:
                 place_ports[component][port_type] += 1
             return used_ports[port_type][component]
-        
-        # def derive_deactivation_condition(activation_condition):
-        #     """Derive the deactivation condition based on the activation condition."""
-        #     return f"not ({activation_condition})" if activation_condition else None
 
         # Generate connections for contexts
         for context in self.contexts:
@@ -102,12 +98,9 @@ class CoPNCompositor:
             deactivate = f"{context}_deactivate"
             events = self.event_definitions[context]
 
-            # activation_time = events.get("activation_time", "{}")
             activation_time = events.get("activation_time", None)
             activation_condition = events.get("activation_condition", None)
-            # deactivation_time = events.get("deactivation_time", "{}")
             deactivation_time = events.get("deactivation_time", None)
-            # deactivation_condition = events.get("deactivation_condition", derive_deactivation_condition(activation_condition))
             deactivation_condition = events.get("deactivation_condition", None)
 
             connections.append((f"{activate}.outPlaces[{get_next_port(context + '_activate', 'out')}]", 
@@ -187,19 +180,14 @@ class CoPNCompositor:
         for context in self.contexts:
             events = self.event_definitions[context]
 
-            # activation_time = events.get("activation_time", "{}")
             activation_time = events.get("activation_time", None)
             activation_condition = events.get("activation_condition", None)
-            # deactivation_time = events.get("deactivation_time", "{}")
             deactivation_time = events.get("deactivation_time", None)
-            # deactivation_condition = events.get("deactivation_condition", derive_deactivation_condition(activation_condition))
             deactivation_condition = events.get("deactivation_condition", None)
 
             # Determine component types dynamically
-            # activation_component = "PNlib.Components.TE" if activation_time != "{}" else "PNlib.Components.TT"
-            # deactivation_component = "PNlib.Components.TE" if deactivation_time != "{}" else "PNlib.Components.TT"
-            activation_component = "PNlib.Components.TE" if activation_time else "PNlib.Components.TT"
-            deactivation_component = "PNlib.Components.TE" if deactivation_time else "PNlib.Components.TT"
+            activation_component = "PNlib.Components.TE" if activation_time else "PNlib.Components.T"
+            deactivation_component = "PNlib.Components.TE" if deactivation_time else "PNlib.Components.T"
 
             modelica_code.append(context_template.render(
                 place=context,
@@ -222,17 +210,13 @@ class CoPNCompositor:
             inhibitor_name = get_unique_name("inhibitors", f"IA_{source}_{target}_weakInclusion")
             
             # Determine the component type
-            # duplicate_event = self.event_definitions[source].get("deactivation_time", "{}")
-            # duplicate_component = "PNlib.Components.TE" if duplicate_event != "{}" else "PNlib.Components.TT"
             duplicate_event = self.event_definitions[source].get("deactivation_time", None)
-            duplicate_component = "PNlib.Components.TE" if duplicate_event else "PNlib.Components.TT"
+            duplicate_component = "PNlib.Components.TE" if duplicate_event else "PNlib.Components.T"
             
             modelica_code.append(weak_inclusion_template.render(
                 inhibitor=inhibitor_name,
                 deactivate_duplicate=f"{duplicate_component} {duplicate_name}",
-                # deactivate_event=self.event_definitions[source].get("deactivation_time", "{}"),
                 deactivate_event=self.event_definitions[source].get("deactivation_time", None),
-                # deactivate_condition=derive_deactivation_condition(self.event_definitions[source].get("activation_condition", None)),
                 deactivate_condition=self.event_definitions[source].get("deactivation_condition", None),
                 duplicate_n_in=2
             ))
@@ -243,17 +227,13 @@ class CoPNCompositor:
             inhibitor_name = get_unique_name("inhibitors", f"IA_{source}_{target}_strongInclusion")
             
             # Determine the component type
-            # duplicate_event = self.event_definitions[target].get("deactivation_time", "{}")
-            # duplicate_component = "PNlib.Components.TE" if duplicate_event != "{}" else "PNlib.Components.TT"
             duplicate_event = self.event_definitions[target].get("deactivation_time", None)
-            duplicate_component = "PNlib.Components.TE" if duplicate_event else "PNlib.Components.TT"
+            duplicate_component = "PNlib.Components.TE" if duplicate_event else "PNlib.Components.T"
 
             modelica_code.append(strong_inclusion_template.render(
                 inhibitor=inhibitor_name,
                 deactivate_duplicate=f"{duplicate_component} {duplicate_name}",
-                # deactivate_event=self.event_definitions[source].get("deactivation_time", "{}"),
                 deactivate_event=self.event_definitions[source].get("deactivation_time", None),
-                # deactivate_condition=derive_deactivation_condition(self.event_definitions[source].get("activation_condition", None)),
                 deactivate_condition=self.event_definitions[source].get("deactivation_condition", None),
                 duplicate_n_in=2
             ))
@@ -275,17 +255,13 @@ class CoPNCompositor:
             inhibitor_name = get_unique_name("inhibitors", f"IA_{source}_{target}_requirement")
             
             # Determine the component type
-            # duplicate_event = self.event_definitions[source].get("deactivation_time", "{}")
-            # duplicate_component = "PNlib.Components.TE" if duplicate_event != "{}" else "PNlib.Components.TT"
             duplicate_event = self.event_definitions[source].get("deactivation_time", None)
-            duplicate_component = "PNlib.Components.TE" if duplicate_event else "PNlib.Components.TT"
+            duplicate_component = "PNlib.Components.TE" if duplicate_event else "PNlib.Components.T"
             
             modelica_code.append(requirement_template.render(
                 inhibitor=inhibitor_name,
                 deactivate_duplicate=f"{duplicate_component} {duplicate_name}",
-                # deactivate_event=self.event_definitions[source].get("deactivation_time", "{}"),
                 deactivate_event=self.event_definitions[source].get("deactivation_time", None),
-                # deactivate_condition=derive_deactivation_condition(self.event_definitions[source].get("activation_condition", None)),
                 deactivate_condition=self.event_definitions[source].get("deactivation_condition", None),
                 duplicate_n_in=2
             ))
@@ -362,7 +338,7 @@ class CoPNCompositor:
 
         # Add edges for requirements with "inv" arrowheads
         for source, target in requirements:
-            dot.edge(source, target, label="Requirement", arrowhead="inv", color="black", style="solid")
+            dot.edge(target, source, label="Requirement", arrowhead="inv", color="black", style="solid")
 
         # Save and display the diagram
         dot.render('context_relations_diagram', view=True)
@@ -380,57 +356,58 @@ class CoPNCompositor:
 if __name__ == "__main__":
     """Example usage."""
     # Define contexts and relations
-    contexts = ["energySavingMode", "normalMode", "highPerformanceMode", "idleMode", "maintenanceMode"]
     # contexts = ["Pendulum", "FreeFlying"]
+    contexts = ["hybridSupply", "greenSupply", "highPerformanceMode", "normalMode", "energySavingMode"]
 
     weak_inclusions = [
-        ("energySavingMode", "normalMode"),
-        ("energySavingMode", "highPerformanceMode")
+        # ("energySavingMode", "normalMode"),
+        # ("energySavingMode", "highPerformanceMode")
     ]
 
     strong_inclusions = [
-        ("idleMode", "maintenanceMode"),
-        ("energySavingMode", "highPerformanceMode")
+        # ("idleMode", "maintenanceMode"),
+        # ("energySavingMode", "highPerformanceMode")
     ]
 
     exclusions = [
-        ["energySavingMode", "highPerformanceMode"],
-        ["normalMode", "idleMode"]
         # ["Pendulum", "FreeFlying"]
+        ["highPerformanceMode", "normalMode", "energySavingMode"],
+        ["hybridSupply", "greenSupply"]
     ]
 
     requirements = [
-        ("energySavingMode", "idleMode"),
-        ("maintenanceMode", "normalMode")
+        # A is the requirement of B
+        ("hybridSupply", "highPerformanceMode")
     ]
 
     event_definitions = {
+        # "Pendulum": {
+        #     "activation_condition": "xxx"
+        # },
+        # "FreeFlying": {
+        #     "activation_condition": "xxx",
+        # }
+        "hybridSupply":{
+            "activation_condition": "(hydrogenProduction < 50)",
+            "deactivation_condition": "(hydrogenProduction > 50)"
+        },
+        "greenSupply":{
+            "activation_condition": "(hydrogenProduction > 50)",
+            "deactivation_condition": "(hydrogenProduction < 50)"
+        },
+        "highPerformanceMode":{
+            "activation_condition": "(loadDemand > 150)",
+            "deactivation_condition": "(loadDemand < 150)"
+        },
+        "normalMode":{
+            "activation_condition": "(loadDemand > 50 and loadDemand < 150)",
+            "deactivation_condition": "(loadDemand < 50 or loadDemand > 150)"
+        },
         "energySavingMode": {
-            "activation_time": "{1, 3}",
-            # "activation_condition": "xxx",
-            "deactivation_time": "{6}"    
-            # "deactivation_condition": "yyy"
-        },
-        "normalMode": {
-            "activation_time": "{2, 4}",
-            "deactivation_time": "{8}",
-            # "activation_condition": "xxx"
-        },
-        "highPerformanceMode": {
-            "activation_time": "{5}",
-            "deactivation_time": "{10, 12}"
-        },
-        "idleMode": {
-            "activation_time": "{7}",
-            "deactivation_time": "{11}"
-        },
-        "maintenanceMode": {
-            "activation_time": "{9}",
-            "deactivation_time": "{13, 14}"
-            # "activation_condition": "HydrogenLevel > 10",
-            # "deactivation_condition": "ElectricityLevel < 5"
+            "activation_condition": "(loadDemand < 50)",
+            "deactivation_condition": "(loadDemand > 50)"
         }
-    }
+    }    
 
     # Create instance
     generator = CoPNCompositor(contexts, weak_inclusions, strong_inclusions, exclusions, requirements, event_definitions)
