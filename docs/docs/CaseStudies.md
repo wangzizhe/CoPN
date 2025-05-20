@@ -2,7 +2,6 @@
 layout: default
 title: Case Studies
 nav_order: 3
-
 ---
 
 # Case Studies
